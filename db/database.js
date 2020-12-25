@@ -66,11 +66,11 @@ function insertNewFolder(parentId, cbFunc) {
 function insertNewFile(parentId, typeFile, cbFunc) {
     pgWrapper.transaction(
         () => {
-            return `INSERT INTO public.files(type, name, starred, shared, date) VALUES (${typeFile}, 'newFile', false, true, NOW()) returning id`
+            return `INSERT INTO public.files(type, name, starred, shared, date) VALUES (${typeFile}, 'newFile', false, true, NOW()) returning *`
         },
         (results) => {
             if (results.rows && results.rowCount >= 1)
-                return `INSERT INTO public.files_to_folder(parent_id, child_id) VALUES (${parentId}, ${results.rows[0].id}) returning id`
+                return `INSERT INTO public.files_to_folder(parent_id, child_id) VALUES (${parentId}, ${results.rows[0].id}) returning *`
             else
                 return null;
         },

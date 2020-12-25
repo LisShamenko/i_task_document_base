@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <% include ../partials/header.ejs %>
+    <style>
+
+    </style>
+</head>
+
+<body>
+  <header id="header_app" class="header-app">
+    <div class="left-div">
+      <img src="not-found.png" class="header-div-content" />
+    </div>
+    <div class="center-div">
+      <p id="document_name" class="header-div-content">Название документа.</p>
+    </div>
+    <div class="right-div">
+      <img src="not-found.png" class="header-div-content dropbtn" onclick="onShowUserLogoMenu()" />
+      <div id="userLogoDropdown" class="dropdown-content">
+        <a href="#settings">Settings</a>
+        <a href="#exit">Exit</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main_app" class="main-app">
+    <div class="main-app-content">
+      <aside class="aside">
+        <span onclick="onShowHideObjectsList()">show/hide<img src="not-found.png" class="aside-button" /></span>
+        <span onclick="onSwitchToDashboards()">dashboards<img src="not-found.png" class="aside-button" /></span>
+        <span onclick="onSwitchToReports()">reports<img src="not-found.png" class="aside-button" /></span>
+      </aside>
+      <div id="first">
+        <div>
+          <span onclick="onNewObject()" class="list-button">new object <img src="not-found.png" /></span>
+          <span onclick="onNewFolder()" class="list-button">new folder <img src="not-found.png" /></span>
+          <span onclick="onRefresh()" class="list-button">refresh <img src="not-found.png" /></span>
+        </div>
+
+        <div id="objects_path" class="objects-path"></div>
+
+        <table id="objects_list" class="objects-list">
+          <thead>
+            <tr>
+              <th style="display:none;"></th>
+              <th>type</th>
+              <th></th>
+              <th></th>
+              <th>Name</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <span class="bottom-left">all documents</span>
+        <span class="bottom-right">shared with me</span>
+      </div>
+      <div id="separator"></div>
+      <div id="second">
+        <p>aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaa aaaaaaaaa aaaaaaaaaaaa aaa aa aaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa
+          aaaaaaaaaaaa aaaa aaaaaa aaaaaa aaaaaaaaa aaaaaaaaaaaa aaa aa aaaaaaaaaaaaa aaaa aaaa aaaaaa aaaaaa aaaaaaaaa
+          aaaa</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer-app">
+    <p>футер</p>
+  </footer>
+
+
+
+
+
+  <script>
+
+    // presentation model
+    let headerElement = document.getElementById("header_app");
+    let mainElement = document.getElementById("main_app");
+    const presentationModel = initPresentationModel(headerElement, mainElement);
+    presentationModel.initLocalSettings();
+
+    // view model
+    const viewModel = initViewModel();
+    window.onload = function () {
+      viewModel.getAllDataAjax((results) => {
+        presentationModel.setViewData(viewModel);
+        presentationModel.showObjectsList();
+      });
+    };
+
+    // events: меню, показать/скрыть список объектов
+    function onShowUserLogoMenu() {
+      presentationModel.ShowUserLogoMenu();
+    }
+    function onShowHideObjectsList() {
+      presentationModel.ShowHideObjectsList();
+    }
+
+    // events: переключение режимов
+    function onSwitchToDashboards() {
+      presentationModel.setDashboardsMode();
+      presentationModel.showObjectsList();
+    }
+    function onSwitchToReports() {
+      presentationModel.setReportsMode();
+      presentationModel.showObjectsList();
+    }
+
+    // events: новый файл, новая папка, обновить
+    function onNewObject() {
+      let parentId = presentationModel.getFolderId();
+      let typeFile = presentationModel.getMode();
+      viewModel.addNewFile(parentId, typeFile, (result) => {
+        presentationModel.addRow(result);
+      });
+    }
+    function onNewFolder() {
+      let parentId = presentationModel.getFolderId();
+      viewModel.addNewFolder(parentId, (result) => {
+        presentationModel.addRow(result);
+      });
+    }
+    function onRefresh() {
+      viewModel.getAllDataAjax((results) => {
+        presentationModel.showObjectsList();
+      });
+    }
+
+    // events: переход в папку
+    function onShowFolder(folderId) {
+      presentationModel.showObjectsList(folderId);
+    }
+
+  </script>
+
+</body>
+
+</html>
