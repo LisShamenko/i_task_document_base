@@ -1,0 +1,53 @@
+// 
+CREATE SEQUENCE public.folders_id_seq INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+ALTER SEQUENCE public.folders_id_seq OWNER TO postgres;
+CREATE TABLE public."folders"
+(
+	id integer NOT NULL DEFAULT nextval('folders_id_seq'::regclass),
+    type integer,
+    name text COLLATE pg_catalog."default",
+    starred boolean,
+    shared boolean,
+    date timestamp without time zone,
+    CONSTRAINT "files_pkey" PRIMARY KEY (id)
+)
+TABLESPACE pg_default;
+ALTER TABLE public."folders" OWNER to postgres;
+
+// 
+CREATE SEQUENCE public.files_id_seq INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+ALTER SEQUENCE public.files_id_seq OWNER TO postgres;
+CREATE TABLE public."files"
+(
+	id integer NOT NULL DEFAULT nextval('files_id_seq'::regclass),
+    type integer,
+    name text COLLATE pg_catalog."default",
+    starred boolean,
+    shared boolean,
+    date timestamp without time zone,
+    CONSTRAINT "files_pkey" PRIMARY KEY (id)
+)
+TABLESPACE pg_default;
+ALTER TABLE public."files" OWNER to postgres;
+
+// 
+CREATE TABLE public.files_to_folder
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    parent_id integer NOT NULL,
+    child_id integer NOT NULL,
+    CONSTRAINT files_to_folder_pkey PRIMARY KEY (id)
+)
+TABLESPACE pg_default;
+ALTER TABLE public.files_to_folder OWNER to postgres;
+
+// 
+CREATE TABLE public.folders_to_folder
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    parent_id integer NOT NULL,
+    child_id integer NOT NULL,
+    CONSTRAINT folders_to_folder_pkey PRIMARY KEY (id)
+)
+TABLESPACE pg_default;
+ALTER TABLE public.folders_to_folder OWNER to postgres;
