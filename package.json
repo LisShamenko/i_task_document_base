@@ -18,7 +18,8 @@
     "express": "^4.15.2",
     "pg": "^8.4.2",
     "request": "^2.88.2",
-    "syntax-error": "^1.4.0"
+    "syntax-error": "^1.4.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "got": "^11.3.0",
