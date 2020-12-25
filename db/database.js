@@ -49,17 +49,17 @@ function selectQuery(query, cbFunc) {
 function insertNewFolder(parentId, cbFunc) {
     pgWrapper.transaction(
         () => {
-            return `INSERT INTO public.folders(type, name, starred, shared, date) VALUES (0, 'newFolder', false, true, NOW()) returning id`
+            return `INSERT INTO public.folders(type, name, starred, shared, date) VALUES (0, 'newFolder', false, true, NOW()) returning *`
         },
         (results) => {
             if (results.rows && results.rowCount >= 1)
-                return `INSERT INTO public.folders_to_folder(parent_id, child_id) VALUES (${parentId}, ${results.rows[0].id}) returning id`
+                return `INSERT INTO public.folders_to_folder(parent_id, child_id) VALUES (${parentId}, ${results.rows[0].id}) returning *`
             else
                 return null;
         },
         (err, firstRes, secondRes) => {
             if (err) return cbFunc(err);
-            cbFunc(false, firstRes.rows[0].id, secondRes.rows[0].id);
+            cbFunc(false, firstRes.rows[0], secondRes.rows[0]);
         });
 }
 
@@ -76,7 +76,7 @@ function insertNewFile(parentId, typeFile, cbFunc) {
         },
         (err, firstRes, secondRes) => {
             if (err) return cbFunc(err);
-            cbFunc(false, firstRes.rows[0].id, secondRes.rows[0].id);
+            cbFunc(false, firstRes.rows[0], secondRes.rows[0]);
         });
 }
 
@@ -91,18 +91,18 @@ function setRouters(express) {
 
     router.post('/addNewFolder', (req, res) => {
         let parentId = req.body.ParentId;
-        insertNewFolder(parentId, (err, parentId, childId) => {
+        insertNewFolder(parentId, (err, folder, folderToFolder) => {
             if (err) return sendJson(res, err.message, 'fail', null);
-            sendJson(res, '', 'success', { parentId: parentId, childId: childId });
+            sendJson(res, '', 'success', { folder: folder, folderToFolder: folderToFolder });
         });
     });
 
     router.post('/addNewFile', (req, res) => {
         let parentId = req.body.ParentId;
         let typeFile = req.body.TypeFile;
-        insertNewFile(parentId, typeFile, (err, parentId, childId) => {
+        insertNewFile(parentId, typeFile, (err, file, fileToFolder) => {
             if (err) return sendJson(res, err.message, 'fail', null);
-            sendJson(res, '', 'success', { parentId: parentId, childId: childId });
+            sendJson(res, '', 'success', { file: file, fileToFolder: fileToFolder });
         });
     });
 
